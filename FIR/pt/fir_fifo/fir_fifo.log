@@ -1,0 +1,167 @@
+
+                                 PrimeTime (R)
+
+               Version U-2022.12-SP5 for linux64 - Jul 14, 2023 
+
+                    Copyright (c) 1988 - 2023 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+#################################################
+# Units are defined in the .lib file
+# time: ns
+#################################################
+## Global
+set sh_enable_page_mode true
+false
+set power_enable_analysis true
+Information: Checked out license 'PrimePower' (PT-019)
+true
+## Setting files/paths
+set verilog_files "../../dc/fir_fifo/fir_fifo.nl.v"
+../../dc/fir_fifo/fir_fifo.nl.v
+set my_toplevel fir_fifo
+fir_fifo
+set search_path ". /courses/ee6321/share/ibm13rflpvt/synopsys/"
+. /courses/ee6321/share/ibm13rflpvt/synopsys/
+set link_path "* scx3_cmos8rf_lpvt_tt_1p2v_25c.db" 
+* scx3_cmos8rf_lpvt_tt_1p2v_25c.db
+## Read design
+read_db "scx3_cmos8rf_lpvt_tt_1p2v_25c.db"
+Loading db file '/courses/ee6321/share/ibm13rflpvt/synopsys/scx3_cmos8rf_lpvt_tt_1p2v_25c.db'
+1
+read_verilog $verilog_files
+1
+link_design $my_toplevel
+Loading verilog file '/homes/user/stud/fall25/aw3741/CSEE4832/FIR/dc/fir_fifo/fir_fifo.nl.v'
+Linking design fir_fifo...
+Information: 499 (94.69%) library cells are unused in library scx3_cmos8rf_lpvt_tt_1p2v_25c..... (LNK-045)
+Information: total 499 library cells are unused (LNK-046)
+Design 'fir_fifo' was successfully linked.
+Information: There are 3426 leaf cells, ports, hiers and 3430 nets in the design (LNK-047)
+1
+## Timing Constraints
+source ./timing.tcl
+Information: Loading library 'scx3_cmos8rf_lpvt_tt_1p2v_25c' data due to accessing lib cells not linked in the current design. (LNK-041)
+Warning: Object 'wptr_gray_reg_4_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'wptr_gray_reg_0_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'wptr_gray_reg_3_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'wptr_gray_reg_5_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'wptr_gray_reg_1_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'wptr_gray_reg_2_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'rptr_gray_reg_1_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'rptr_gray_reg_5_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'rptr_gray_reg_3_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'rptr_gray_reg_0_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'rptr_gray_reg_4_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'rptr_gray_reg_2_/Q' is not a valid startpoint. (UITE-216)
+1
+1
+###################################################
+## Run STA 
+###################################################
+set rpt_file "./fir_fifo_pt.rpt"
+./fir_fifo_pt.rpt
+check_timing
+Information: Building multi voltage information for entire design. (MV-022)
+Information: Checking 'no_input_delay'.
+Warning: There are 2 ports with no clock-relative input delay specified.
+Since the variable 'timing_input_port_default_clock' is 'false',
+paths from such ports will be unconstrained.
+
+Information: Checking 'no_driving_cell'.
+Information: Checking 'unconstrained_endpoints'.
+Information: Checking 'unexpandable_clocks'.
+Information: Checking 'latch_fanout'.
+Information: Checking 'no_clock'.
+Information: Checking 'partial_input_delay'.
+Information: Checking 'generic'.
+Information: Checking 'loops'.
+Information: Checking 'generated_clocks'.
+Information: Checking 'pulse_clock_non_pulse_clock_merge'.
+Information: Checking 'pll_configuration'.
+Information: Checking 'voltage_level'.
+0
+report_design >> ${rpt_file}
+report_reference >> ${rpt_file}
+report_constraint >> ${rpt_file}
+report_constraint -all_violators -significant_digits 4 >> ${rpt_file}
+report_timing -significant_digits 4 -delay_type min_max >> ${rpt_file}
+## Power analysis
+set power_analysis_mode "time_based"
+time_based
+read_vcd "../../qsim_dc/fir_fifo/testbench.vcd" -strip_path "testbench/dut"
+
+======================================================================
+Summary:
+Total number of nets = 3430
+Number of annotated nets = 3430 (100.00%)
+Total number of leaf cells = 3385
+Number of fully annotated leaf cells = 3385 (100.00%)
+======================================================================
+
+1
+report_switching_activity >> ${rpt_file}
+report_switching_activity -list_not_annotated >> ${rpt_file}
+update_power
+Information: Running time_based power analysis... (PWR-601)
+Information: Reading vcd file '/homes/user/stud/fall25/aw3741/CSEE4832/FIR/qsim_dc/fir_fifo/testbench.vcd'
+Information: The waveform options are:
+		File name:	primetime_px.fsdb
+		File format:	fsdb
+		Time interval:	0.001ns
+		Hierarchical level:	all
+
+Information: Power analysis is running, please wait ...
+
+ Last event time = 49965.000000 ns  Last event time = 99725.000000 ns  Last event time = 149720.000000 ns  Last event time = 199550.000000 ns  Last event time = 249545.000000 ns  Last event time = 299540.000000 ns  Last event time = 349535.000000 ns  Last event time = 399530.000000 ns  Last event time = 449525.000000 ns  Last event time = 499180.000000 ns  Last event time = 549175.000000 ns  Last event time = 599010.000000 ns  Last event time = 649005.000000 ns  Last event time = 699000.000000 ns  Last event time = 748995.000000 ns  Last event time = 798990.000000 ns  Last event time = 848985.000000 ns  Last event time = 898785.000000 ns  Last event time = 948780.000000 ns  Last event time = 998635.000000 ns  Last event time = 1048630.000000 ns  Last event time = 1098625.000000 ns  Last event time = 1148620.000000 ns  Last event time = 1198615.000000 ns  Last event time = 1248610.000000 ns  Last event time = 1298370.000000 ns  Last event time = 1348365.000000 ns  Last event time = 1398155.000000 ns  Last event time = 1448150.000000 ns  Last event time = 1498145.000000 ns  Last event time = 1548140.000000 ns  Last event time = 1598135.000000 ns  Last event time = 1648130.000000 ns  Last event time = 1697780.000000 ns  Last event time = 1747775.000000 ns  Last event time = 1797620.000000 ns  Last event time = 1847615.000000 ns  Last event time = 1897610.000000 ns  Last event time = 1947605.000000 ns  Last event time = 1997600.000000 ns  Last event time = 2047595.000000 ns  Last event time = 2097355.000000 ns  Last event time = 2147350.000000 ns  Last event time = 2197190.000000 ns  Last event time = 2247185.000000 ns  Last event time = 2297180.000000 ns  Last event time = 2347175.000000 ns  Last event time = 2397170.000000 ns  Last event time = 2447165.000000 ns  Last event time = 2496830.000000 ns  Last event time = 2546825.000000 ns  Last event time = 2596670.000000 ns  Last event time = 2646665.000000 ns  Last event time = 2696660.000000 ns  Last event time = 2746655.000000 ns  Last event time = 2796650.000000 ns  Last event time = 2846645.000000 ns  Last event time = 2896220.000000 ns  Last event time = 2946215.000000 ns  Last event time = 2995975.000000 ns  Last event time = 3045970.000000 ns  Last event time = 3095965.000000 ns  Last event time = 3145960.000000 ns  Last event time = 3195955.000000 ns  Last event time = 3245950.000000 ns  Last event time = 3295660.000000 ns  Last event time = 3345655.000000 ns  Last event time = 3395505.000000 ns  Last event time = 3445500.000000 ns  Last event time = 3495495.000000 ns  Last event time = 3545490.000000 ns  Last event time = 3595485.000000 ns  Last event time = 3645480.000000 ns  Last event time = 3695215.000000 ns  Last event time = 3745210.000000 ns  Last event time = 3795055.000000 ns  Last event time = 3845050.000000 ns  Last event time = 3895045.000000 ns  Last event time = 3945040.000000 ns  Last event time = 3995035.000000 ns  Last event time = 4045030.000000 ns  Last event time = 4094635.000000 ns  Last event time = 4144630.000000 ns  Last event time = 4194495.000000 ns  Last event time = 4244490.000000 ns  Last event time = 4294485.000000 ns  Last event time = 4344480.000000 ns  Last event time = 4394475.000000 ns  Last event time = 4444470.000000 ns  Last event time = 4494125.000000 ns  Last event time = 4544120.000000 ns  Last event time = 4593895.000000 ns  Last event time = 4643890.000000 ns  Last event time = 4693885.000000 ns  Last event time = 4743880.000000 ns  Last event time = 4793875.000000 ns  Last event time = 4843870.000000 ns  Last event time = 4893565.000000 ns  Last event time = 4943560.000000 ns  Last event time = 4993415.000000 ns  Last event time = 5043410.000000 ns  Last event time = 5093405.000000 ns  Last event time = 5143400.000000 ns  Last event time = 5193395.000000 ns  Last event time = 5243390.000000 ns  Last event time = 5293135.000000 ns  Last event time = 5343130.000000 ns  Last event time = 5392955.000000 ns  Last event time = 5442950.000000 ns  Last event time = 5492945.000000 ns  Last event time = 5542940.000000 ns  Last event time = 5592935.000000 ns  Last event time = 5642930.000000 ns  Last event time = 5692550.000000 ns  Last event time = 5742545.000000 ns  Last event time = 5792390.000000 ns  Last event time = 5842385.000000 ns  Last event time = 5892380.000000 ns  Last event time = 5942375.000000 ns  Last event time = 5992370.000000 ns  Last event time = 6042365.000000 ns  Last event time = 6091935.000000 ns  Last event time = 6141930.000000 ns  Last event time = 6191685.000000 ns  Last event time = 6241680.000000 ns  Last event time = 6291675.000000 ns  Last event time = 6341670.000000 ns  Last event time = 6391665.000000 ns  Last event time = 6441660.000000 ns  Last event time = 6491445.000000 ns  Last event time = 6541440.000000 ns  Last event time = 6591285.000000 ns  Last event time = 6641280.000000 ns  Last event time = 6691275.000000 ns  Last event time = 6741270.000000 ns  Last event time = 6791265.000000 ns  Last event time = 6841260.000000 ns  Last event time = 6890855.000000 ns  Last event time = 6940850.000000 ns  Last event time = 6990680.000000 ns  Last event time = 7040675.000000 ns  Last event time = 7090670.000000 ns  Last event time = 7140665.000000 ns  Last event time = 7190660.000000 ns  Last event time = 7240655.000000 ns  Last event time = 7290310.000000 ns  Last event time = 7340305.000000 ns  Last event time = 7390170.000000 ns  Last event time = 7440165.000000 ns  Last event time = 7490160.000000 ns  Last event time = 7540155.000000 ns  Last event time = 7590150.000000 ns  Last event time = 7640145.000000 ns  Last event time = 7689845.000000 ns  Last event time = 7739840.000000 ns  Last event time = 7789620.000000 ns  Last event time = 7839615.000000 ns  Last event time = 7889610.000000 ns  Last event time = 7939605.000000 ns  Last event time = 7989600.000000 ns  Last event time = 8039595.000000 ns  Last event time = 8089275.000000 ns  Last event time = 8139270.000000 ns  Last event time = 8189120.000000 ns  Last event time = 8239115.000000 ns  Last event time = 8289110.000000 ns  Last event time = 8339105.000000 ns  Last event time = 8389100.000000 ns  Last event time = 8439095.000000 ns  Last event time = 8488735.000000 ns  Last event time = 8538730.000000 ns  Last event time = 8588565.000000 ns  Last event time = 8638560.000000 ns  Last event time = 8688555.000000 ns  Last event time = 8738550.000000 ns  Last event time = 8788545.000000 ns  Last event time = 8838540.000000 ns  Last event time = 8888115.000000 ns  Last event time = 8938110.000000 ns  Last event time = 8987960.000000 ns  Last event time = 9037955.000000 ns  Last event time = 9087950.000000 ns  Last event time = 9137945.000000 ns  Last event time = 9187940.000000 ns  Last event time = 9237935.000000 ns  Last event time = 9287450.000000 ns  Last event time = 9337445.000000 ns  Last event time = 9387195.000000 ns  Last event time = 9437190.000000 ns  Last event time = 9487185.000000 ns  Last event time = 9537180.000000 ns  Last event time = 9587175.000000 ns  Last event time = 9637170.000000 ns  Last event time = 9686820.000000 ns  Last event time = 9736815.000000 ns  Last event time = 9786640.000000 ns  Last event time = 9836635.000000 ns  Last event time = 9886630.000000 ns  Last event time = 9936625.000000 ns  Last event time = 9986620.000000 ns  Last event time = 10036615.000000 ns  Last event time = 10086285.000000 ns  Last event time = 10136280.000000 ns  Last event time = 10186115.000000 ns  Last event time = 10236110.000000 ns  Last event time = 10286105.000000 ns  Last event time = 10336100.000000 ns  Last event time = 10386095.000000 ns  Last event time = 10436090.000000 ns  Last event time = 10485755.000000 ns  Last event time = 10535750.000000 ns  Last event time = 10585590.000000 ns  Last event time = 10635585.000000 ns  Last event time = 10685580.000000 ns  Last event time = 10735575.000000 ns  Last event time = 10785570.000000 ns  Last event time = 10835565.000000 ns  Last event time = 10885225.000000 ns  Last event time = 10935220.000000 ns  Last event time = 10984990.000000 ns  Last event time = 11034985.000000 ns  Last event time = 11084980.000000 ns  Last event time = 11134975.000000 ns  Last event time = 11184970.000000 ns  Last event time = 11234965.000000 ns  Last event time = 11284690.000000 ns  Last event time = 11334685.000000 ns  Last event time = 11384515.000000 ns  Last event time = 11434510.000000 ns  Last event time = 11484505.000000 ns  Last event time = 11534500.000000 ns  Last event time = 11584495.000000 ns  Last event time = 11634490.000000 ns  Last event time = 11684115.000000 ns  Last event time = 11734110.000000 ns  Last event time = 11783930.000000 ns  Last event time = 11833925.000000 ns  Last event time = 11883920.000000 ns  Last event time = 11933915.000000 ns  Last event time = 11983910.000000 ns  Last event time = 12033905.000000 ns  Last event time = 12083645.000000 ns  Last event time = 12133640.000000 ns  Last event time = 12183445.000000 ns  Last event time = 12233440.000000 ns  Last event time = 12283435.000000 ns  Last event time = 12333430.000000 ns  Last event time = 12383425.000000 ns  Last event time = 12433420.000000 ns  Last event time = 12483015.000000 ns  Last event time = 12533010.000000 ns  Last event time = 12582725.000000 ns  Last event time = 12632720.000000 ns  Last event time = 12682715.000000 ns  Last event time = 12732710.000000 ns  Last event time = 12782705.000000 ns  Last event time = 12832700.000000 ns  Last event time = 12882380.000000 ns  Last event time = 12932375.000000 ns  Last event time = 12982200.000000 ns  Last event time = 13032195.000000 ns  Last event time = 13082190.000000 ns  Last event time = 13132185.000000 ns  Last event time = 13182180.000000 ns  Last event time = 13232175.000000 ns  Last event time = 13281935.000000 ns  Last event time = 13331930.000000 ns  Last event time = 13381755.000000 ns  Last event time = 13431750.000000 ns  Last event time = 13481745.000000 ns  Last event time = 13531740.000000 ns  Last event time = 13581735.000000 ns  Last event time = 13631730.000000 ns  Last event time = 13681425.000000 ns  Last event time = 13731420.000000 ns  Last event time = 13781260.000000 ns  Last event time = 13831255.000000 ns  Last event time = 13881250.000000 ns  Last event time = 13931245.000000 ns  Last event time = 13981240.000000 ns  Last event time = 14031235.000000 ns  Last event time = 14080860.000000 ns  Last event time = 14130855.000000 ns  Last event time = 14180630.000000 ns  Last event time = 14230625.000000 ns  Last event time = 14280620.000000 ns  Last event time = 14330615.000000 ns  Last event time = 14380610.000000 ns  Last event time = 14430605.000000 ns  Last event time = 14480240.000000 ns  Last event time = 14530235.000000 ns  Last event time = 14580065.000000 ns  Last event time = 14630060.000000 ns  Last event time = 14680055.000000 ns  Last event time = 14730050.000000 ns  Last event time = 14780045.000000 ns  Last event time = 14830040.000000 ns  Last event time = 14879730.000000 ns  Last event time = 14929725.000000 ns  Last event time = 14979560.000000 ns  Last event time = 15029555.000000 ns  Last event time = 15079550.000000 ns  Last event time = 15129545.000000 ns  Last event time = 15179540.000000 ns  Last event time = 15229535.000000 ns  Last event time = 15279245.000000 ns  Last event time = 15329240.000000 ns  Last event time = 15379070.000000 ns  Last event time = 15429065.000000 ns  Last event time = 15479060.000000 ns  Last event time = 15529055.000000 ns  Last event time = 15579050.000000 ns  Last event time = 15629045.000000 ns  Last event time = 15678575.000000 ns  Last event time = 15728570.000000 ns  Last event time = 15778315.000000 ns  Last event time = 15828310.000000 ns  Last event time = 15878305.000000 ns  Last event time = 15928300.000000 ns  Last event time = 15978295.000000 ns  Last event time = 16028290.000000 ns  Last event time = 16077985.000000 ns  Last event time = 16127980.000000 ns  Last event time = 16177815.000000 ns  Last event time = 16227810.000000 ns  Last event time = 16277805.000000 ns  Last event time = 16327800.000000 ns  Last event time = 16377795.000000 ns  Last event time = 16427790.000000 ns  Last event time = 16477265.000000 ns  Last event time = 16527260.000000 ns  Last event time = 16577090.000000 ns  Last event time = 16627085.000000 ns  Last event time = 16677080.000000 ns  Last event time = 16727075.000000 ns  Last event time = 16777070.000000 ns  Last event time = 16827065.000000 ns  Last event time = 16876685.000000 ns  Last event time = 16926680.000000 ns  Last event time = 16976530.000000 ns  Last event time = 17026525.000000 ns  Last event time = 17076520.000000 ns  Last event time = 17126515.000000 ns  Last event time = 17176510.000000 ns  Last event time = 17226505.000000 ns  Last event time = 17276115.000000 ns  Last event time = 17326110.000000 ns  Last event time = 17375870.000000 ns  Last event time = 17425865.000000 ns  Last event time = 17475860.000000 ns  Last event time = 17525855.000000 ns  Last event time = 17575850.000000 ns  Last event time = 17625845.000000 ns  Last event time = 17675375.000000 ns  Last event time = 17725370.000000 ns  Last event time = 17775210.000000 ns  Last event time = 17825205.000000 ns  Last event time = 17875200.000000 ns  Last event time = 17925195.000000 ns  Last event time = 17975190.000000 ns  Last event time = 18025185.000000 ns  Last event time = 18074765.000000 ns  Last event time = 18124760.000000 ns  Last event time = 18174575.000000 ns  Last event time = 18224570.000000 ns  Last event time = 18274565.000000 ns  Last event time = 18324560.000000 ns  Last event time = 18374555.000000 ns  Last event time = 18424550.000000 ns  Last event time = 18474100.000000 ns  Last event time = 18524095.000000 ns  Last event time = 18573930.000000 ns  Last event time = 18623925.000000 ns  Last event time = 18673920.000000 ns  Last event time = 18723915.000000 ns  Last event time = 18773910.000000 ns  Last event time = 18823905.000000 ns  Last event time = 18873595.000000 ns  Last event time = 18923590.000000 ns  Last event time = 18973335.000000 ns  Last event time = 19023330.000000 ns  Last event time = 19073325.000000 ns  Last event time = 19123320.000000 ns  Last event time = 19173315.000000 ns  Last event time = 19223310.000000 ns  Last event time = 19272965.000000 ns  Last event time = 19322960.000000 ns  Last event time = 19372795.000000 ns  Last event time = 19422790.000000 ns  Last event time = 19472785.000000 ns  Last event time = 19522780.000000 ns  Last event time = 19572775.000000 ns  Last event time = 19622770.000000 ns  Last event time = 19672385.000000 ns  Last event time = 19722380.000000 ns  Last event time = 19772195.000000 ns  Last event time = 19822190.000000 ns  Last event time = 19872185.000000 ns  Last event time = 19922180.000000 ns  Last event time = 19972175.000000 ns  Last event time = 20022170.000000 ns  Last event time = 20071750.000000 ns  Last event time = 20121745.000000 ns  Last event time = 20171595.000000 ns  Last event time = 20221590.000000 ns  Last event time = 20271585.000000 ns  Last event time = 20321580.000000 ns  Last event time = 20371575.000000 ns  Last event time = 20421570.000000 ns  Last event time = 20471170.000000 ns  Last event time = 20521165.000000 ns  Last event time = 20570935.000000 ns  Last event time = 20620930.000000 ns  Last event time = 20670925.000000 ns  Last event time = 20720920.000000 ns  Last event time = 20770915.000000 ns  Last event time = 20820910.000000 ns  Last event time = 20870525.000000 ns  Last event time = 20920520.000000 ns  Last event time = 20970365.000000 ns  Last event time = 21020360.000000 ns  Last event time = 21070355.000000 ns  Last event time = 21120350.000000 ns  Last event time = 21170345.000000 ns  Last event time = 21220340.000000 ns  Last event time = 21269970.000000 ns  Last event time = 21319965.000000 ns  Last event time = 21369785.000000 ns  Last event time = 21419780.000000 ns  Last event time = 21469775.000000 ns  Last event time = 21519770.000000 ns  Last event time = 21569765.000000 ns  Last event time = 21619760.000000 ns  Last event time = 21669415.000000 ns  Last event time = 21719410.000000 ns  Last event time = 21769250.000000 ns  Last event time = 21819245.000000 ns  Last event time = 21869240.000000 ns  Last event time = 21919235.000000 ns  Last event time = 21969230.000000 ns  Last event time = 22019225.000000 ns  Last event time = 22068820.000000 ns  Last event time = 22118815.000000 ns  Last event time = 22168555.000000 ns  Last event time = 22218550.000000 ns  Last event time = 22268545.000000 ns  Last event time = 22318540.000000 ns  Last event time = 22368535.000000 ns  Last event time = 22418530.000000 ns  Last event time = 22468170.000000 ns  Last event time = 22518165.000000 ns  Last event time = 22567980.000000 ns  Last event time = 22617975.000000 ns  Last event time = 22667970.000000 ns  Last event time = 22717965.000000 ns  Last event time = 22767960.000000 ns  Last event time = 22817955.000000 ns  Last event time = 22867585.000000 ns  Last event time = 22917580.000000 ns  Last event time = 22967400.000000 ns  Last event time = 23017395.000000 ns  Last event time = 23067390.000000 ns  Last event time = 23117385.000000 ns  Last event time = 23167380.000000 ns  Last event time = 23217375.000000 ns  Last event time = 23267030.000000 ns  Last event time = 23317025.000000 ns  Last event time = 23366855.000000 ns  Last event time = 23416850.000000 ns  Last event time = 23466845.000000 ns  Last event time = 23516840.000000 ns  Last event time = 23566835.000000 ns  Last event time = 23616830.000000 ns  Last event time = 23666445.000000 ns  Last event time = 23716440.000000 ns  Last event time = 23766195.000000 ns  Last event time = 23816190.000000 ns  Last event time = 23866185.000000 ns  Last event time = 23916180.000000 ns  Last event time = 23966175.000000 ns  Last event time = 24016170.000000 ns  Last event time = 24065915.000000 ns  Last event time = 24115910.000000 ns  Last event time = 24165730.000000 ns  Last event time = 24215725.000000 ns  Last event time = 24265720.000000 ns  Last event time = 24315715.000000 ns  Last event time = 24365710.000000 ns  Last event time = 24415705.000000 ns  Last event time = 24465230.000000 ns  Last event time = 24515225.000000 ns  Last event time = 24565030.000000 ns  Last event time = 24615025.000000 ns  Last event time = 24665020.000000 ns  Last event time = 24715015.000000 ns  Last event time = 24765010.000000 ns  Last event time = 24815005.000000 ns  Last event time = 24864675.000000 ns  Last event time = 24914670.000000 ns  Last event time = 24964460.000000 ns  Last event time = 25014455.000000 ns  Last event time = 25064450.000000 ns  Last event time = 25114445.000000 ns  Last event time = 25164440.000000 ns  Last event time = 25214435.000000 ns  Last event time = 25264105.000000 ns  Last event time = 25314100.000000 ns  Last event time = 25363840.000000 ns  Last event time = 25413835.000000 ns  Last event time = 25463820.000000 ns  Last event time = 25513815.000000 ns  Last event time = 25550817.257000 ns  Last event time = 25555940.000000 ns  Last event time = 25605935.000000 ns  Last event time = 25655910.000000 ns  Last event time = 25705905.000000 ns  Last event time = 25755865.000000 ns  Last event time = 25805860.000000 ns  Last event time = 25855845.000000 ns  Last event time = 25905840.000000 ns  Last event time = 25955320.000000 ns  Last event time = 26005315.000000 ns  Last event time = 26054955.000000 ns  Last event time = 26104950.000000 ns  Last event time = 26154945.000000 ns  Last event time = 26204940.000000 ns  Last event time = 26254935.000000 ns  Last event time = 26304930.000000 ns  Last event time = 26354600.000000 ns  Last event time = 26404595.000000 ns  Last event time = 26454375.000000 ns  Last event time = 26504370.000000 ns  Last event time = 26554365.000000 ns  Last event time = 26604360.000000 ns  Last event time = 26654355.000000 ns  Last event time = 26704350.000000 ns  Last event time = 26753955.000000 ns  Last event time = 26803950.000000 ns  Last event time = 26853750.000000 ns  Last event time = 26903745.000000 ns  Last event time = 26953740.000000 ns  Last event time = 27003735.000000 ns  Last event time = 27053730.000000 ns  Last event time = 27103725.000000 ns  Last event time = 27153410.000000 ns  Last event time = 27203405.000000 ns  Last event time = 27253140.000000 ns  Last event time = 27303135.000000 ns  Last event time = 27353130.000000 ns  Last event time = 27403125.000000 ns  Last event time = 27453120.000000 ns  Last event time = 27503115.000000 ns  Last event time = 27552870.000000 ns  Last event time = 27602865.000000 ns  Last event time = 27652655.000000 ns  Last event time = 27702650.000000 ns  Last event time = 27752645.000000 ns  Last event time = 27802640.000000 ns  Last event time = 27852635.000000 ns  Last event time = 27902630.000000 ns  Last event time = 27952170.000000 ns  Last event time = 28002165.000000 ns  Last event time = 28051955.000000 ns  Last event time = 28101950.000000 ns  Last event time = 28151945.000000 ns  Last event time = 28201940.000000 ns  Last event time = 28251935.000000 ns  Last event time = 28301930.000000 ns  Last event time = 28351550.000000 ns  Last event time = 28401545.000000 ns  Last event time = 28451335.000000 ns  Last event time = 28501330.000000 ns  Last event time = 28551325.000000 ns  Last event time = 28601320.000000 ns  Last event time = 28651315.000000 ns  Last event time = 28701310.000000 ns  Last event time = 28750990.000000 ns  Last event time = 28800985.000000 ns  Last event time = 28850690.000000 ns  Last event time = 28900685.000000 ns  Last event time = 28950680.000000 ns  Last event time = 29000675.000000 ns  Last event time = 29050670.000000 ns  Last event time = 29100665.000000 ns  Last event time = 29150240.000000 ns  Last event time = 29200235.000000 ns  Last event time = 29250030.000000 ns  Last event time = 29300025.000000 ns  Last event time = 29350020.000000 ns  Last event time = 29400015.000000 ns  Last event time = 29450010.000000 ns  Last event time = 29500005.000000 ns  Last event time = 29550003.000000 ns  Last event time = 29599555.000000 ns  Last event time = 29649550.000000 ns  Last event time = 29699350.000000 ns  Last event time = 29749345.000000 ns  Last event time = 29799340.000000 ns  Last event time = 29849335.000000 ns  Last event time = 29899330.000000 ns  Last event time = 29949325.000000 ns  Last event time = 29998855.000000 ns  Last event time = 30048850.000000 ns  Last event time = 30098660.000000 ns  Last event time = 30148655.000000 ns  Last event time = 30198650.000000 ns  Last event time = 30248645.000000 ns  Last event time = 30298640.000000 ns  Last event time = 30348635.000000 ns  Last event time = 30398275.000000 ns  Last event time = 30448270.000000 ns  Last event time = 30497990.000000 ns  Last event time = 30547985.000000 ns  Last event time = 30597980.000000 ns  Last event time = 30647975.000000 ns  Last event time = 30697970.000000 ns  Last event time = 30747965.000000 ns  Last event time = 30797575.000000 ns  Last event time = 30847570.000000 ns  Last event time = 30897360.000000 ns  Last event time = 30947355.000000 ns  Last event time = 30997350.000000 ns  Last event time = 31047345.000000 ns  Last event time = 31097340.000000 ns  Last event time = 31147335.000000 ns  Last event time = 31196875.000000 ns  Last event time = 31246870.000000 ns  Last event time = 31296630.000000 ns  Last event time = 31346625.000000 ns  Last event time = 31396620.000000 ns  Last event time = 31446615.000000 ns  Last event time = 31496610.000000 ns  Last event time = 31546605.000000 ns  Last event time = 31596225.000000 ns  Last event time = 31646220.000000 ns  Last event time = 31695995.000000 ns  Last event time = 31745990.000000 ns  Last event time = 31795985.000000 ns  Last event time = 31845980.000000 ns  Last event time = 31895975.000000 ns  Last event time = 31945970.000000 ns  Last event time = 31995590.000000 ns  Last event time = 32045585.000000 ns  Last event time = 32095290.000000 ns  Last event time = 32145285.000000 ns  Last event time = 32195280.000000 ns  Last event time = 32245275.000000 ns  Last event time = 32295270.000000 ns  Last event time = 32345265.000000 ns  Last event time = 32395260.000000 ns  Last event time = 32445255.000000 ns  Last event time = 32495250.000000 ns  Last event time = 32545245.000000 ns  Last event time = 32581030.000000 ns  Last event time = 32631025.000000 ns  Last event time = 32680660.000000 ns  Last event time = 32730655.000000 ns  Last event time = 32780260.000000 ns  Last event time = 32830255.000000 ns  Last event time = 32880250.000000 ns  Last event time = 32930245.000000 ns  Last event time = 32980240.000000 ns  Last event time = 33030235.000000 ns  Last event time = 33080230.000000 ns  Last event time = 33130225.000000 ns  Last event time = 33180220.000000 ns  Last event time = 33230215.000000 ns 
+Information: analysis is done for time window (0ns - 3.32512e+07ns)
+
+Information: Total simulation time = 33251190.000000 ns
+1
+report_power >> ${rpt_file}
+report_power -hierarchy  >> ${rpt_file}
+write_sdf -context verilog "./fir_fifo.sdf"
+****************************************
+Report : write_sdf ./fir_fifo.sdf
+Design : fir_fifo
+Version: U-2022.12-SP5
+Date   : Tue Dec  2 22:24:12 2025
+****************************************
+
+1
+# Exiting primetime
+quit
+Information: Defining new variable 'clk2_output_delay'. (CMD-041)
+Information: Defining new variable 'clk1_output_delay'. (CMD-041)
+Information: Defining new variable 'clk1_input_delay'. (CMD-041)
+Information: Defining new variable 'rpt_file'. (CMD-041)
+Information: Defining new variable 'clk2_uncertainty'. (CMD-041)
+Information: Defining new variable 'clk2_transition'. (CMD-041)
+Information: Defining new variable 'clk2_period'. (CMD-041)
+Information: Defining new variable 'my_toplevel'. (CMD-041)
+Information: Defining new variable 'clk1_uncertainty'. (CMD-041)
+Information: Defining new variable 'clk2_input_delay'. (CMD-041)
+Information: Defining new variable 'clk1_period'. (CMD-041)
+Information: Defining new variable 'verilog_files'. (CMD-041)
+Information: Defining new variable 'clk1_transition'. (CMD-041)
+
+Timing updates: 1 (1 implicit, 0 explicit) (0 incremental, 1 full, 0 logical)
+Noise updates: 0 (0 implicit, 0 explicit) (0 incremental, 0 full)
+Maximum memory usage for this session: 3257.27 MB
+CPU usage for this session: 232 seconds 
+Elapsed time for this session: 234 seconds
+Diagnostics summary: 12 warnings, 20 informationals
+
+Thank you for using pt_shell!

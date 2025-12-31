@@ -1,0 +1,107 @@
+ 
+****************************************
+Report : timing
+        -path end
+        -delay max
+        -max_paths 10000
+        -sort_by slack
+Design : fir_alu
+Version: U-2022.12-SP7
+Date   : Fri Nov 21 14:04:00 2025
+****************************************
+
+Operating Conditions: tt_1p2v_25c   Library: scx3_cmos8rf_lpvt_tt_1p2v_25c
+Wire Load Model Mode: top
+
+Endpoint                         Path Delay     Path Required     Slack
+------------------------------------------------------------------------
+y_q7_9[12] (out)                    7.75 f            7.90         0.15
+y_q7_9[11] (out)                    7.75 f            7.90         0.15
+y_q7_9[10] (out)                    7.75 f            7.90         0.15
+y_q7_9[9] (out)                     7.75 f            7.90         0.15
+y_q7_9[8] (out)                     7.75 f            7.90         0.15
+y_q7_9[7] (out)                     7.75 f            7.90         0.15
+y_q7_9[6] (out)                     7.75 f            7.90         0.15
+y_q7_9[5] (out)                     7.75 f            7.90         0.15
+y_q7_9[4] (out)                     7.75 f            7.90         0.15
+y_q7_9[3] (out)                     7.75 f            7.90         0.15
+y_q7_9[2] (out)                     7.75 f            7.90         0.15
+y_q7_9[1] (out)                     7.75 f            7.90         0.15
+y_q7_9[14] (out)                    7.72 f            7.90         0.18
+y_q7_9[13] (out)                    7.72 f            7.90         0.18
+y_q7_9[0] (out)                     7.72 f            7.90         0.18
+y_q7_9[15] (out)                    7.54 r            7.90         0.36
+prod_q30[31] (out)                  7.46 r            7.90         0.44
+prod_q30[30] (out)                  7.35 f            7.90         0.55
+prod_q30[29] (out)                  7.35 f            7.90         0.55
+prod_q30[28] (out)                  7.35 f            7.90         0.55
+prod_q30[27] (out)                  7.35 f            7.90         0.55
+prod_q30[26] (out)                  7.35 f            7.90         0.55
+prod_q30[25] (out)                  7.35 f            7.90         0.55
+prod_q30[24] (out)                  7.35 f            7.90         0.55
+prod_q30[23] (out)                  7.35 f            7.90         0.55
+prod_q30[22] (out)                  7.34 f            7.90         0.56
+prod_q30[21] (out)                  7.34 f            7.90         0.56
+prod_q30[19] (out)                  7.34 f            7.90         0.56
+prod_q30[20] (out)                  7.34 f            7.90         0.56
+prod_q30[18] (out)                  7.14 f            7.90         0.76
+prod_q30[17] (out)                  7.13 f            7.90         0.77
+prod_q30[15] (out)                  7.11 f            7.90         0.79
+prod_q30[16] (out)                  7.11 f            7.90         0.79
+prod_q30[14] (out)                  6.91 f            7.90         0.99
+prod_q30[13] (out)                  6.78 f            7.90         1.12
+prod_q30[12] (out)                  6.66 f            7.90         1.24
+prod_q30[11] (out)                  6.60 f            7.90         1.30
+prod_q30[10] (out)                  6.41 f            7.90         1.49
+prod_q30[9] (out)                   6.08 r            7.90         1.82
+prod_q30[8] (out)                   5.87 r            7.90         2.03
+prod_q30[7] (out)                   5.68 r            7.90         2.22
+prod_q30[6] (out)                   5.37 r            7.90         2.53
+prod_q30[5] (out)                   5.31 f            7.90         2.59
+prod_q30[4] (out)                   4.93 f            7.90         2.97
+prod_q30[3] (out)                   4.43 f            7.90         3.47
+prod_q30[2] (out)                   3.99 f            7.90         3.91
+prod_q30[1] (out)                   3.79 r            7.90         4.11
+prod_q30[0] (out)                   2.60 f            7.90         5.30
+acc_out[39] (out)                   1.19 r            7.90         6.71
+acc_out[31] (out)                   1.01 r            7.90         6.89
+acc_out[37] (out)                   0.93 f            7.90         6.97
+acc_out[36] (out)                   0.93 f            7.90         6.97
+acc_out[35] (out)                   0.93 f            7.90         6.97
+acc_out[34] (out)                   0.93 f            7.90         6.97
+acc_out[33] (out)                   0.93 f            7.90         6.97
+acc_out[38] (out)                   0.92 f            7.90         6.98
+acc_out[32] (out)                   0.92 f            7.90         6.98
+acc_out[8] (out)                    0.92 r            7.90         6.98
+acc_out[30] (out)                   0.87 f            7.90         7.03
+acc_out[28] (out)                   0.87 f            7.90         7.03
+acc_out[26] (out)                   0.87 f            7.90         7.03
+acc_out[24] (out)                   0.87 f            7.90         7.03
+acc_out[22] (out)                   0.87 f            7.90         7.03
+acc_out[29] (out)                   0.87 f            7.90         7.03
+acc_out[27] (out)                   0.87 f            7.90         7.03
+acc_out[25] (out)                   0.87 f            7.90         7.03
+acc_out[21] (out)                   0.87 f            7.90         7.03
+acc_out[23] (out)                   0.87 f            7.90         7.03
+acc_out[20] (out)                   0.86 f            7.90         7.04
+acc_out[19] (out)                   0.86 f            7.90         7.04
+acc_out[18] (out)                   0.86 f            7.90         7.04
+acc_out[17] (out)                   0.86 f            7.90         7.04
+acc_out[14] (out)                   0.86 f            7.90         7.04
+acc_out[13] (out)                   0.86 f            7.90         7.04
+acc_out[10] (out)                   0.86 f            7.90         7.04
+acc_out[9] (out)                    0.86 f            7.90         7.04
+acc_out[7] (out)                    0.86 f            7.90         7.04
+acc_out[6] (out)                    0.86 f            7.90         7.04
+acc_out[5] (out)                    0.86 f            7.90         7.04
+acc_out[3] (out)                    0.86 f            7.90         7.04
+acc_out[1] (out)                    0.86 f            7.90         7.04
+acc_out[16] (out)                   0.85 f            7.90         7.05
+acc_out[15] (out)                   0.85 f            7.90         7.05
+acc_out[12] (out)                   0.85 f            7.90         7.05
+acc_out[11] (out)                   0.85 f            7.90         7.05
+acc_out[4] (out)                    0.85 f            7.90         7.05
+acc_out[2] (out)                    0.85 f            7.90         7.05
+acc_out[0] (out)                    0.85 f            7.90         7.05
+
+1

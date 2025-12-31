@@ -1,0 +1,198 @@
+###################################################################### 
+# FIR Core Timing Constraints
+# 64-tap FIR Filter with dual clock domains
+###################################################################### 
+set_dont_touch_network [get_ports rstn]
+set_ideal_network [get_ports rstn]
+
+# Prevent reset from being optimized away or merged
+set_false_path -from [get_ports rstn]
+###################################################################### 
+# Clock Domain 1: clk1 (10 kHz - Input Sampling Clock)
+# Used for ADC sample input at 10 kS/s rate
+###################################################################### 
+set clk1_period           100000.0
+set clk1_setup_uncertainty 1.0
+set clk1_hold_uncertainty  0.1
+set clk1_transition        1.0
+
+if {[sizeof_collection [get_ports clk1]] > 0} {
+  create_clock -name clk1 -period $clk1_period [get_ports clk1]
+  set_clock_uncertainty -setup $clk1_setup_uncertainty [get_clocks clk1]
+  set_clock_uncertainty -hold  $clk1_hold_uncertainty  [get_clocks clk1]
+  set_clock_transition $clk1_transition [get_clocks clk1]
+}
+
+###################################################################### 
+# Clock Domain 2: clk2 (100 MHz - Core Processing Clock)
+# Used for FIR filter MAC operations
+###################################################################### 
+set clk2_period      10.0
+set clk2_uncertainty 0.25
+set clk2_transition  0.15
+
+if {[sizeof_collection [get_ports clk2]] > 0} {
+  create_clock -name clk2 -period $clk2_period [get_ports clk2]
+  set_clock_uncertainty $clk2_uncertainty [get_clocks clk2]
+  set_clock_transition  $clk2_transition  [get_clocks clk2]
+}
+
+###################################################################### 
+# Clock Groups - Mark clocks as asynchronous to each other
+# CRITICAL: This prevents timing analysis across clock domains
+###################################################################### 
+set_clock_groups -asynchronous -group {clk1} -group {clk2}
+
+###################################################################### 
+# Input Constraints - clk1 domain (Sample Input)
+###################################################################### 
+set clk1_input_delay 10000.0
+
+if {[sizeof_collection [get_ports valid_in]] > 0} {
+  set_driving_cell -lib_cell INVX1TS [get_ports valid_in]
+  set_input_delay $clk1_input_delay [get_ports valid_in] -clock clk1
+}
+
+if {[sizeof_collection [get_ports din*]] > 0} {
+  set_driving_cell -lib_cell INVX1TS [get_ports din*]
+  set_input_delay $clk1_input_delay [get_ports din*] -clock clk1
+}
+
+###################################################################### 
+# Input Constraints - clk2 domain (Coefficient Loading)
+###################################################################### 
+set clk2_input_delay 1.0
+
+if {[sizeof_collection [get_ports cload]] > 0} {
+  set_driving_cell -lib_cell INVX1TS [get_ports cload]
+  set_input_delay $clk2_input_delay [get_ports cload] -clock clk2
+}
+
+if {[sizeof_collection [get_ports caddr*]] > 0} {
+  set_driving_cell -lib_cell INVX1TS [get_ports caddr*]
+  set_input_delay $clk2_input_delay [get_ports caddr*] -clock clk2
+}
+
+if {[sizeof_collection [get_ports cin*]] > 0} {
+  set_driving_cell -lib_cell INVX1TS [get_ports cin*]
+  set_input_delay $clk2_input_delay [get_ports cin*] -clock clk2
+}
+
+###################################################################### 
+# Output Constraints - clk2 domain (Filter Output)
+###################################################################### 
+set clk2_output_delay 0.5
+
+if {[sizeof_collection [get_ports valid_out]] > 0} {
+  set_output_delay $clk2_output_delay [get_ports valid_out] -clock clk2
+  set_load 0.01 [get_ports valid_out]
+}
+
+if {[sizeof_collection [get_ports dout*]] > 0} {
+  set_output_delay $clk2_output_delay [get_ports dout*] -clock clk2
+  set_load 0.01 [get_ports dout*]
+}
+
+###################################################################### 
+# Asynchronous Reset Constraints
+###################################################################### 
+if {[sizeof_collection [get_ports rstn]] > 0} {
+  set_false_path -from [get_ports rstn]
+  set_max_transition 2.0 [get_ports rstn]
+}
+
+###################################################################### 
+# CDC False Paths - CRITICAL for FIFO Clock Domain Crossing
+# The internal async FIFO uses Gray code synchronizers
+###################################################################### 
+
+# False path from write pointer Gray code to read domain synchronizer
+if {[sizeof_collection [get_pins -hierarchical *wptr_gray_reg*/Q]] > 0} {
+  if {[sizeof_collection [get_pins -hierarchical *wptr_gray_sync1_reg*/D]] > 0} {
+    set_false_path -from [get_pins -hierarchical *wptr_gray_reg*/Q] \
+                   -to   [get_pins -hierarchical *wptr_gray_sync1_reg*/D]
+  }
+}
+
+# False path from read pointer Gray code to write domain synchronizer
+if {[sizeof_collection [get_pins -hierarchical *rptr_gray_reg*/Q]] > 0} {
+  if {[sizeof_collection [get_pins -hierarchical *rptr_gray_sync1_reg*/D]] > 0} {
+    set_false_path -from [get_pins -hierarchical *rptr_gray_reg*/Q] \
+                   -to   [get_pins -hierarchical *rptr_gray_sync1_reg*/D]
+  }
+}
+
+###################################################################### 
+# Critical Path Optimization - MAC Unit
+# The 16x16 multiplier is the critical path in clk2 domain
+###################################################################### 
+
+# Allow synthesis to replicate registers for timing optimization
+set_register_replication [get_designs fir_core] true
+
+# Group MAC datapath for better optimization
+if {[sizeof_collection [get_cells -hierarchical u_alu]] > 0} {
+  group_path -name MAC_PATH -from [get_pins -hierarchical u_alu/a_q15*] \
+                             -to   [get_pins -hierarchical u_alu/y_q7_9*]
+  set_max_delay 9.0 -from [get_pins -hierarchical u_alu/a_q15*] \
+                    -to   [get_pins -hierarchical u_alu/y_q7_9*]
+}
+
+###################################################################### 
+# Multi-cycle Paths
+# FSM states are stable for multiple cycles during MAC operation
+###################################################################### 
+if {[sizeof_collection [get_pins -hierarchical u_fsm/state_reg*/Q]] > 0} {
+  set_multicycle_path 2 -setup -from [get_pins -hierarchical u_fsm/state_reg*/Q]
+  set_multicycle_path 1 -hold  -from [get_pins -hierarchical u_fsm/state_reg*/Q]
+}
+
+###################################################################### 
+# Design Rule Constraints
+###################################################################### 
+set_max_fanout      17   [current_design]
+set_max_transition  1.0  [current_design]
+set_max_capacitance 0.5  [current_design]
+
+###################################################################### 
+# Hold Time Fixing
+###################################################################### 
+set_fix_hold [all_clocks]
+
+# Set realistic max delay for slow clk1 (90% of period)
+set_max_delay 90000.0 -from [get_clocks clk1] -to [get_clocks clk1]
+
+# Set realistic max delay for fast clk2 (90% of period)
+set_max_delay 9.0 -from [get_clocks clk2] -to [get_clocks clk2]
+
+set_cost_priority -delay
+
+###################################################################### 
+# Don't touch CDC synchronizer cells
+###################################################################### 
+if {[sizeof_collection [get_cells -hierarchical *sync*]] > 0} {
+  set_size_only [get_cells -hierarchical *sync*] true
+}
+
+###################################################################### 
+# Operating Conditions
+###################################################################### 
+set_operating_conditions typical
+
+###################################################################### 
+# Wire Load Model
+###################################################################### 
+set_wire_load_mode top
+
+###################################################################### 
+# Area Optimization - Allow some area increase for timing
+###################################################################### 
+set_max_area 0
+
+###################################################################### 
+# Compile Strategy for Meeting Timing
+###################################################################### 
+# Use these commands during synthesis:
+# compile_ultra -gate_clock -no_autoungroup
+# optimize_registers
+# compile_ultra -incremental

@@ -1,0 +1,160 @@
+
+                                 PrimeTime (R)
+
+               Version U-2022.12-SP5 for linux64 - Jul 14, 2023 
+
+                    Copyright (c) 1988 - 2023 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+#################################################
+# Units are defined in the .lib file
+# time: ns
+#################################################
+## Global
+set sh_enable_page_mode true
+false
+set power_enable_analysis true
+Information: Checked out license 'PrimePower' (PT-019)
+true
+## Setting files/paths
+set verilog_files "../../dc/fir_core/fir_core.nl.v"
+../../dc/fir_core/fir_core.nl.v
+set my_toplevel fir_core
+fir_core
+set search_path ". /courses/ee6321/share/ibm13rflpvt/synopsys/"
+. /courses/ee6321/share/ibm13rflpvt/synopsys/
+set link_path "* scx3_cmos8rf_lpvt_tt_1p2v_25c.db" 
+* scx3_cmos8rf_lpvt_tt_1p2v_25c.db
+## Read design
+read_db "scx3_cmos8rf_lpvt_tt_1p2v_25c.db"
+Loading db file '/courses/ee6321/share/ibm13rflpvt/synopsys/scx3_cmos8rf_lpvt_tt_1p2v_25c.db'
+1
+read_verilog $verilog_files
+1
+link_design $my_toplevel
+Loading verilog file '/homes/user/stud/fall25/aw3741/CSEE4832/FIR/dc/fir_core/fir_core.nl.v'
+Linking design fir_core...
+Information: Removing 3 unneeded designs..... (LNK-034)
+Information: 467 (88.61%) library cells are unused in library scx3_cmos8rf_lpvt_tt_1p2v_25c..... (LNK-045)
+Information: total 467 library cells are unused (LNK-046)
+Design 'fir_core' was successfully linked.
+Information: There are 10694 leaf cells, ports, hiers and 11092 nets in the design (LNK-047)
+1
+## Timing Constraints
+source ./timing.tcl
+Warning: Object 'u_fifo/wptr_gray_reg_0_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/wptr_gray_reg_1_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/wptr_gray_reg_2_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/wptr_gray_reg_3_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/wptr_gray_reg_4_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/wptr_gray_reg_5_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/rptr_gray_reg_4_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/rptr_gray_reg_2_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/rptr_gray_reg_0_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/rptr_gray_reg_1_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/rptr_gray_reg_5_/Q' is not a valid startpoint. (UITE-216)
+Warning: Object 'u_fifo/rptr_gray_reg_3_/Q' is not a valid startpoint. (UITE-216)
+Warning: No pin objects matched 'u_fsm/state_reg*/Q' (SEL-004)
+Error: Nothing matched for pins (SEL-005)
+Error: Cannot specify -max without -min. (CMD-003)
+0
+0
+###################################################
+## Run STA 
+###################################################
+set rpt_file "./fir_core_pt.rpt"
+./fir_core_pt.rpt
+check_timing
+Information: Building multi voltage information for entire design. (MV-022)
+Information: Checking 'no_input_delay'.
+Warning: There are 1 ports with no clock-relative input delay specified.
+Since the variable 'timing_input_port_default_clock' is 'false',
+paths from such ports will be unconstrained.
+
+Information: Checking 'no_driving_cell'.
+Information: Checking 'unconstrained_endpoints'.
+Information: Checking 'unexpandable_clocks'.
+Information: Checking 'latch_fanout'.
+Information: Checking 'no_clock'.
+Information: Checking 'partial_input_delay'.
+Information: Checking 'generic'.
+Information: Checking 'loops'.
+Information: Checking 'generated_clocks'.
+Information: Checking 'pulse_clock_non_pulse_clock_merge'.
+Information: Checking 'pll_configuration'.
+Information: Checking 'voltage_level'.
+0
+report_design >> ${rpt_file}
+report_reference >> ${rpt_file}
+report_constraint >> ${rpt_file}
+report_constraint -all_violators -significant_digits 4 >> ${rpt_file}
+report_timing -significant_digits 4 -delay_type min_max >> ${rpt_file}
+## Power analysis
+set power_analysis_mode "time_based"
+time_based
+read_vcd "../../qsim_dc/fir_core/testbench.vcd" -strip_path "testbench/dut"
+
+======================================================================
+Summary:
+Total number of nets = 10953
+Number of annotated nets = 10953 (100.00%)
+Total number of leaf cells = 10630
+Number of fully annotated leaf cells = 10630 (100.00%)
+======================================================================
+
+1
+report_switching_activity >> ${rpt_file}
+report_switching_activity -list_not_annotated >> ${rpt_file}
+update_power
+Information: Running time_based power analysis... (PWR-601)
+Information: Reading vcd file '/homes/user/stud/fall25/aw3741/CSEE4832/FIR/qsim_dc/fir_core/testbench.vcd'
+Information: The waveform options are:
+		File name:	primetime_px.fsdb
+		File format:	fsdb
+		Time interval:	0.001ns
+		Hierarchical level:	all
+
+Information: Power analysis is running, please wait ...
+
+ Last event time = 18865.000000 ns  Last event time = 68630.000000 ns  Last event time = 118625.000000 ns  Last event time = 150118.268000 ns  Last event time = 150286.663000 ns  Last event time = 150456.518000 ns  Last event time = 150606.547000 ns  Last event time = 166380.000000 ns  Last event time = 216375.000000 ns  Last event time = 266065.000000 ns  Last event time = 316060.000000 ns  Last event time = 350099.994000 ns  Last event time = 350256.607000 ns  Last event time = 350418.745000 ns  Last event time = 350568.458000 ns  Last event time = 353835.000000 ns  Last event time = 403830.000000 ns  Last event time = 453475.000000 ns  Last event time = 503470.000000 ns  Last event time = 550067.259000 ns  Last event time = 550218.677000 ns  Last event time = 550387.907000 ns  Last event time = 550540.953000 ns  Last event time = 550698.339000 ns  Last event time = 597975.000000 ns  Last event time = 647970.000000 ns  Last event time = 697690.000000 ns  Last event time = 747685.000000 ns  Last event time = 750189.484000 ns  Last event time = 750358.200000 ns  Last event time = 750517.439000 ns  Last event time = 750669.042000 ns  Last event time = 788890.000000 ns  Last event time = 838885.000000 ns  Last event time = 888670.000000 ns  Last event time = 938665.000000 ns  Last event time = 950156.497000 ns  Last event time = 950307.016000 ns  Last event time = 950469.197000 ns  Last event time = 950617.491000 ns  Last event time = 972350.000000 ns  Last event time = 1022345.000000 ns  Last event time = 1071920.000000 ns  Last event time = 1121915.000000 ns  Last event time = 1150108.309000 ns  Last event time = 1150249.785000 ns  Last event time = 1150408.702000 ns  Last event time = 1150548.863000 ns  Last event time = 1150698.245000 ns  Last event time = 1197795.000000 ns  Last event time = 1247790.000000 ns  Last event time = 1297445.000000 ns  Last event time = 1347440.000000 ns  Last event time = 1350169.263000 ns  Last event time = 1350329.060000 ns  Last event time = 1350497.388000 ns  Last event time = 1350647.729000 ns  Last event time = 1382730.000000 ns  Last event time = 1432725.000000 ns  Last event time = 1482435.000000 ns  Last event time = 1532430.000000 ns  Last event time = 1550128.199000 ns  Last event time = 1550278.409000 ns  Last event time = 1550446.057000 ns  Last event time = 1550588.086000 ns  Last event time = 1562730.000000 ns  Last event time = 1612725.000000 ns  Last event time = 1662335.000000 ns  Last event time = 1712330.000000 ns  Last event time = 1750087.737000 ns  Last event time = 1750207.665000 ns  Last event time = 1750376.147000 ns  Last event time = 1750518.683000 ns  Last event time = 1750668.123000 ns  Last event time = 1787530.000000 ns  Last event time = 1837525.000000 ns  Last event time = 1887080.000000 ns  Last event time = 1937075.000000 ns  Last event time = 1950136.152000 ns  Last event time = 1950268.901000 ns  Last event time = 1950428.000000 ns  Last event time = 1950576.717000 ns  Last event time = 1956780.000000 ns  Last event time = 2006775.000000 ns  Last event time = 2056330.000000 ns  Last event time = 2106325.000000 ns  Last event time = 2150069.092000 ns  Last event time = 2150176.771000 ns  Last event time = 2150329.176000 ns  Last event time = 2150489.330000 ns  Last event time = 2150646.816000 ns  Last event time = 2180055.000000 ns  Last event time = 2230050.000000 ns  Last event time = 2279725.000000 ns  Last event time = 2329720.000000 ns  Last event time = 2350126.607000 ns  Last event time = 2350258.972000 ns  Last event time = 2350428.505000 ns  Last event time = 2350586.723000 ns  Last event time = 2362455.000000 ns  Last event time = 2412450.000000 ns  Last event time = 2462100.000000 ns  Last event time = 2512095.000000 ns  Last event time = 2550087.318000 ns  Last event time = 2550190.043000 ns  Last event time = 2550349.011000 ns  Last event time = 2550506.867000 ns  Last event time = 2550649.871000 ns  Last event time = 2583690.000000 ns  Last event time = 2633685.000000 ns  Last event time = 2683270.000000 ns  Last event time = 2733265.000000 ns  Last event time = 2750126.823000 ns  Last event time = 2750239.085000 ns  Last event time = 2750407.581000 ns  Last event time = 2750546.860000 ns  Last event time = 2750708.008000 ns  Last event time = 2799470.000000 ns  Last event time = 2849465.000000 ns  Last event time = 2899135.000000 ns  Last event time = 2949130.000000 ns  Last event time = 2950158.222000 ns  Last event time = 2950288.404000 ns  Last event time = 2950447.855000 ns  Last event time = 2950579.579000 ns  Last event time = 2957645.000000 ns  Last event time = 3007640.000000 ns  Last event time = 3057295.000000 ns  Last event time = 3107290.000000 ns  Last event time = 3150076.961000 ns  Last event time = 3150179.773000 ns  Last event time = 3150318.839000 ns  Last event time = 3150489.369000 ns  Last event time = 3150646.681000 ns  Last event time = 3181375.000000 ns  Last event time = 3231370.000000 ns  Last event time = 3281060.000000 ns  Last event time = 3331055.000000 ns  Last event time = 3350120.663000 ns  Last event time = 3350228.869000 ns  Last event time = 3350387.824000 ns  Last event time = 3350535.791000 ns  Last event time = 3350688.167000 ns  Last event time = 3394445.000000 ns  Last event time = 3444440.000000 ns  Last event time = 3493965.000000 ns  Last event time = 3543960.000000 ns  Last event time = 3550148.711000 ns  Last event time = 3550266.374000 ns  Last event time = 3550426.768000 ns  Last event time = 3550568.371000 ns  Last event time = 3555750.000000 ns  Last event time = 3605745.000000 ns  Last event time = 3655500.000000 ns  Last event time = 3705495.000000 ns  Last event time = 3750069.765000 ns  Last event time = 3750169.528000 ns  Last event time = 3750287.274000 ns  Last event time = 3750447.643000 ns  Last event time = 3750579.585000 ns  Last event time = 3759800.000000 ns  Last event time = 3809795.000000 ns  Last event time = 3859465.000000 ns  Last event time = 3909460.000000 ns  Last event time = 3950079.686000 ns  Last event time = 3950187.888000 ns  Last event time = 3950309.332000 ns  Last event time = 3950476.768000 ns  Last event time = 3950617.680000 ns 
+Information: analysis is done for time window (0ns - 3.97079e+06ns)
+
+Information: Total simulation time = 3970790.000000 ns
+1
+report_power >> ${rpt_file}
+report_power -hierarchy  >> ${rpt_file}
+write_sdf -context verilog "./fir_core.sdf"
+****************************************
+Report : write_sdf ./fir_core.sdf
+Design : fir_core
+Version: U-2022.12-SP5
+Date   : Wed Dec 17 15:50:08 2025
+****************************************
+
+1
+# Exiting primetime
+quit
+Information: Defining new variable 'rpt_file'. (CMD-041)
+Information: Defining new variable 'my_toplevel'. (CMD-041)
+Information: Defining new variable 'verilog_files'. (CMD-041)
+
+Timing updates: 1 (1 implicit, 0 explicit) (0 incremental, 1 full, 0 logical)
+Noise updates: 0 (0 implicit, 0 explicit) (0 incremental, 0 full)
+Maximum memory usage for this session: 3291.36 MB
+CPU usage for this session: 588 seconds 
+Elapsed time for this session: 603 seconds
+Diagnostics summary: 2 errors, 13 warnings, 10 informationals
+
+Thank you for using pt_shell!

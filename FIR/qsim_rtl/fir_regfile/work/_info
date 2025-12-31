@@ -1,0 +1,57 @@
+m255
+K4
+z2
+!s11f vlog 2024.2 2024.05, May 20 2024
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/homes/user/stud/fall25/aw3741/CSEE4832/FIR/qsim_rtl/fir_regfile
+vregfile
+2../../rtl/fir_regfile/fir_regfile.v
+Z1 !s110 1764721033
+!i10b 1
+!s100 >hdXM4[V9hC[j1Ae0[c?Y3
+IOOQTIb=:EmR:oU;nBQ3<U3
+R0
+w1763878198
+8../../rtl/fir_regfile/fir_regfile.v
+F../../rtl/fir_regfile/fir_regfile.v
+!i122 0
+L0 4 36
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+Z3 OP;L;2024.2;79
+r1
+!s85 0
+31
+!s108 1764721032.000000
+!s107 ../../rtl/fir_regfile/fir_regfile.v|
+!s90 -reportprogress|300|+acc|-incr|../../rtl/fir_regfile/fir_regfile.v|
+!i113 1
+Z4 o+acc
+Z5 tCvgOpt 0
+vtestbench
+2test_fir_regfile.v
+R1
+!i10b 1
+!s100 KG[k4go?keAKam_HOkOkf0
+I`iSe5m@Q;ME>9UkfBij@M2
+R0
+w1763878620
+8test_fir_regfile.v
+Ftest_fir_regfile.v
+!i122 1
+L0 2 109
+R2
+R3
+r1
+!s85 0
+31
+!s108 1764721033.000000
+!s107 test_fir_regfile.v|
+!s90 -reportprogress|300|+acc|-incr|test_fir_regfile.v|
+!i113 1
+R4
+R5
