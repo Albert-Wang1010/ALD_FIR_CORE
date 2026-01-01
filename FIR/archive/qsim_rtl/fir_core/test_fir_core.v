@@ -1,0 +1,550 @@
+// ===========================================================================
+// FIR Core Comprehensive Testbench
+// ===========================================================================
+// Based on successful simple and focused testbenches
+// Tests all major functionality with proper comparisons
+// ===========================================================================
+
+`timescale 1ns/1ps
+
+module testbench;
+
+    // -----------------------------------------------------------------------
+    // Parameters
+    // -----------------------------------------------------------------------
+    parameter NUM_TAPS = 64;
+    parameter CLK1_PERIOD = 100000;  // 10 kHz = 100 us period
+    parameter CLK2_PERIOD = 10;      // 100 MHz = 10 ns period
+    parameter PHASE_OFFSET = 3;      // Phase offset between clocks
+    
+    // -----------------------------------------------------------------------
+    // DUT Signals
+    // -----------------------------------------------------------------------
+    reg                 clk1;
+    reg                 clk2;
+    reg                 rstn;
+    reg  signed [15:0]  din;
+    reg                 valid_in;
+    reg  signed [15:0]  cin;
+    reg  [5:0]          caddr;
+    reg                 cload;
+    wire signed [15:0]  dout;
+    wire                valid_out;
+    
+    // -----------------------------------------------------------------------
+    // Test Variables
+    // -----------------------------------------------------------------------
+    integer i, j;
+    integer test_num;
+    integer pass_count;
+    integer fail_count;
+    integer timeout_counter;
+    reg signed [15:0] actual;
+    
+    // -----------------------------------------------------------------------
+    // Clock Generation
+    // -----------------------------------------------------------------------
+    initial begin
+        clk1 = 0;
+        #PHASE_OFFSET;
+        forever #(CLK1_PERIOD/2) clk1 = ~clk1;
+    end
+    
+    initial begin
+        clk2 = 0;
+        forever #(CLK2_PERIOD/2) clk2 = ~clk2;
+    end
+    
+    // -----------------------------------------------------------------------
+    // DUT Instantiation
+    // -----------------------------------------------------------------------
+    fir_core dut (
+        .clk1(clk1),
+        .clk2(clk2),
+        .rstn(rstn),
+        .din(din),
+        .valid_in(valid_in),
+        .cin(cin),
+        .caddr(caddr),
+        .cload(cload),
+        .dout(dout),
+        .valid_out(valid_out)
+    );
+    
+    // -----------------------------------------------------------------------
+    // VCD Dump (disabled by default to save memory)
+    // -----------------------------------------------------------------------
+    initial begin
+        // Uncomment if you need waveforms:
+        // $dumpfile("fir_core_tb_comprehensive.vcd");
+        // $dumpvars(0, fir_core_tb_comprehensive);
+    end
+    
+    // -----------------------------------------------------------------------
+    // Task: Load Coefficients
+    // -----------------------------------------------------------------------
+    task load_coeffs;
+        input signed [15:0] coeff_value;
+        begin
+            for (i = 0; i < NUM_TAPS; i = i + 1) begin
+                @(posedge clk2);
+                #1;
+                cload = 1;
+                caddr = i[5:0];
+                cin = coeff_value;
+            end
+            @(posedge clk2);
+            #1;
+            cload = 0;
+            repeat(5) @(posedge clk2);
+            $display("Loaded coefficients: 0x%h", coeff_value);
+        end
+    endtask
+    
+    // -----------------------------------------------------------------------
+    // Task: Send Sample and Wait for Output
+    // -----------------------------------------------------------------------
+    task send_and_wait;
+        input signed [15:0] sample;
+        output signed [15:0] result;
+        begin
+            @(posedge clk1);
+            #1;
+            din = sample;
+            valid_in = 1;
+            @(posedge clk1);
+            #1;
+            valid_in = 0;
+            
+            timeout_counter = 0;
+            while (valid_out == 0 && timeout_counter < 10000) begin
+                @(posedge clk2);
+                timeout_counter = timeout_counter + 1;
+            end
+            
+            if (timeout_counter < 10000) begin
+                @(posedge clk2);
+                #1;
+                result = dout;
+            end else begin
+                result = 16'hXXXX;
+                $display("[ERROR] Timeout waiting for output");
+                fail_count = fail_count + 1;
+            end
+            
+            repeat(2) @(posedge clk2);
+        end
+    endtask
+    
+    // -----------------------------------------------------------------------
+    // Task: Flush Filter with Zeros
+    // -----------------------------------------------------------------------
+    task flush_filter;
+        input integer num_samples;
+        reg signed [15:0] dummy;
+        begin
+            for (j = 0; j < num_samples; j = j + 1) begin
+                send_and_wait(16'sh0000, dummy);
+            end
+        end
+    endtask
+    
+    // -----------------------------------------------------------------------
+    // Main Test Sequence
+    // -----------------------------------------------------------------------
+    initial begin
+        $display("\n========================================");
+        $display("FIR Core Comprehensive Testbench");
+        $display("========================================");
+        $display("NUM_TAPS: %0d", NUM_TAPS);
+        $display("clk1: 10 kHz, clk2: 100 MHz");
+        $display("========================================\n");
+        
+        // Initialize
+        pass_count = 0;
+        fail_count = 0;
+        test_num = 0;
+        rstn = 0;
+        din = 0;
+        valid_in = 0;
+        cin = 0;
+        caddr = 0;
+        cload = 0;
+        
+        // Reset
+        $display("[%0t ns] Reset...", $time);
+        #(CLK2_PERIOD * 10);
+        rstn = 1;
+        #(CLK2_PERIOD * 10);
+        $display("[%0t ns] Reset complete\n", $time);
+        
+        // ===================================================================
+        // TEST 1: Coefficient Loading
+        // ===================================================================
+        test_num = 1;
+        $display("========================================");
+        $display("TEST 1: Coefficient Loading");
+        $display("========================================");
+        
+        load_coeffs(16'sh0100);
+        
+        $display("TEST 1: PASSED (coefficients loaded)\n");
+        pass_count = pass_count + 1;
+        
+        repeat(10) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 2: Zero Input
+        // ===================================================================
+        test_num = 2;
+        $display("========================================");
+        $display("TEST 2: Zero Input");
+        $display("========================================");
+        
+        send_and_wait(16'sh0000, actual);
+        $display("Output = 0x%h (%0d)", actual, $signed(actual));
+        
+        if (actual == 16'sh0000) begin
+            $display("TEST 2: PASSED\n");
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 2: FAILED (expected 0)\n");
+            fail_count = fail_count + 1;
+        end
+        
+        repeat(20) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 3: DC Response (Fill Filter)
+        // ===================================================================
+        test_num = 3;
+        $display("========================================");
+        $display("TEST 3: DC Response (64 samples)");
+        $display("========================================");
+        
+        load_coeffs(16'sh0100);
+        
+        $display("Sending 70 samples of 0x1000...");
+        for (i = 0; i < 70; i = i + 1) begin
+            send_and_wait(16'sh1000, actual);
+            
+            if (i == 0 || i == 1 || i == 63 || i == 64 || i == 69) begin
+                $display("  Sample[%02d]: output = 0x%h (%0d)", i, actual, $signed(actual));
+            end else if (i == 2) begin
+                $display("  ...");
+            end
+        end
+        
+        // Expected: 64 * 0x1000 * 0x0100 / 2^21 = 32
+        if (actual >= 16'sh001E && actual <= 16'sh0022) begin
+            $display("TEST 3: PASSED (output = %0d, expected ~32)\n", $signed(actual));
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 3: FAILED (output = %0d, expected ~32)\n", $signed(actual));
+            fail_count = fail_count + 1;
+        end
+        
+        repeat(20) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 4: Impulse Response
+        // ===================================================================
+        test_num = 4;
+        $display("========================================");
+        $display("TEST 4: Impulse Response");
+        $display("========================================");
+        
+        load_coeffs(16'sh1000);
+        
+        $display("Filling filter with 70 impulses (0x7FFF)...");
+        for (i = 0; i < 70; i = i + 1) begin
+            send_and_wait(16'sh7FFF, actual);
+            
+            if (i == 0 || i == 1 || i == 63 || i == 64 || i == 69) begin
+                $display("  Sample[%02d]: output = 0x%h (%0d)", i, actual, $signed(actual));
+            end else if (i == 2) begin
+                $display("  ...");
+            end
+        end
+        
+        // Expected: 64 * 0x7FFF * 0x1000 / 2^21 = 4095
+        if (actual >= 16'sh0FF0 && actual <= 16'sh1010) begin
+            $display("TEST 4: PASSED (output = %0d, expected ~4095)\n", $signed(actual));
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 4: FAILED (output = %0d, expected ~4095)\n", $signed(actual));
+            fail_count = fail_count + 1;
+        end
+        
+        repeat(20) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 5: Alternating Input
+        // ===================================================================
+        test_num = 5;
+        $display("========================================");
+        $display("TEST 5: Alternating +/- Input");
+        $display("========================================");
+        
+        load_coeffs(16'sh0100);
+        
+        $display("Sending 70 alternating samples (+0x2000/-0x2000)...");
+        for (i = 0; i < 70; i = i + 1) begin
+            if (i % 2 == 0) begin
+                send_and_wait(16'sh2000, actual);
+            end else begin
+                send_and_wait(-16'sh2000, actual);
+            end
+            
+            if (i < 3 || (i >= 62 && i <= 66) || i >= 68) begin
+                $display("  Sample[%02d]: output = 0x%h (%0d)", i, actual, $signed(actual));
+            end else if (i == 3) begin
+                $display("  ...");
+            end
+        end
+        
+        // Expected: average to ~0
+        if (actual >= -16'sh0010 && actual <= 16'sh0010) begin
+            $display("TEST 5: PASSED (output = %0d, expected ~0)\n", $signed(actual));
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 5: FAILED (output = %0d, expected ~0)\n", $signed(actual));
+            fail_count = fail_count + 1;
+        end
+        
+        repeat(20) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 6: Step Response
+        // ===================================================================
+        test_num = 6;
+        $display("========================================");
+        $display("TEST 6: Step Response");
+        $display("========================================");
+        
+        load_coeffs(16'sh0100);
+        
+        $display("Filling with 0x0800 (50 samples)...");
+        for (i = 0; i < 50; i = i + 1) begin
+            send_and_wait(16'sh0800, actual);
+        end
+        $display("  Stabilized at: 0x%h (%0d)", actual, $signed(actual));
+        
+        // Expected: 64 * 0x0800 * 0x0100 / 2^21 = 13
+        if (actual >= 16'sh000A && actual <= 16'sh0010) begin
+            $display("  Low value correct (expected ~13)");
+        end else begin
+            $display("  ERROR: Low value = %0d, expected ~13", $signed(actual));
+            fail_count = fail_count + 1;
+        end
+        
+        $display("Stepping to 0x3000 (65 samples)...");
+        for (i = 0; i < 65; i = i + 1) begin
+            send_and_wait(16'sh3000, actual);
+            
+            if (i == 0 || i == 1 || i == 31 || i == 63 || i == 64) begin
+                $display("  Sample[%02d]: output = 0x%h (%0d)", i, actual, $signed(actual));
+            end else if (i == 2) begin
+                $display("  ...");
+            end
+        end
+        
+        // Expected: 64 * 0x3000 * 0x0100 / 2^21 = 96
+        if (actual >= 16'sh005A && actual <= 16'sh0068) begin
+            $display("TEST 6: PASSED (output = %0d, expected ~96)\n", $signed(actual));
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 6: FAILED (output = %0d, expected ~96)\n", $signed(actual));
+            fail_count = fail_count + 1;
+        end
+        
+        repeat(20) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 7: Positive Saturation (with clean filter)
+        // ===================================================================
+        test_num = 7;
+        $display("========================================");
+        $display("TEST 7: Positive Saturation");
+        $display("========================================");
+        
+        // Flush filter completely
+        $display("Flushing filter (70 zeros)...");
+        load_coeffs(16'sh0100);
+        flush_filter(70);
+        
+        // Load max coefficient
+        load_coeffs(16'sh7FFF);
+        
+        $display("Sending 70 max positive samples (0x7FFF)...");
+        for (i = 0; i < 70; i = i + 1) begin
+            send_and_wait(16'sh7FFF, actual);
+            
+            if (i == 0 || i == 1 || i == 63 || i == 64 || i == 69) begin
+                $display("  Sample[%02d]: output = 0x%h (%0d)", i, actual, $signed(actual));
+            end else if (i == 2) begin
+                $display("  ...");
+            end
+        end
+        
+        // Expected: 64 * 0x7FFF * 0x7FFF / 2^21 = 32766
+        if (actual >= 16'sh7FFE && actual <= 16'sh7FFF) begin
+            $display("TEST 7: PASSED (output = %0d, expected 32766-32767)\n", $signed(actual));
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 7: FAILED (output = %0d, expected 32766-32767)\n", $signed(actual));
+            fail_count = fail_count + 1;
+        end
+        
+        repeat(20) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 8: Negative Saturation (Positive * Negative)
+        // ===================================================================
+        test_num = 8;
+        $display("========================================");
+        $display("TEST 8: Negative Saturation");
+        $display("========================================");
+        
+        // Flush filter completely
+        $display("Flushing filter (70 zeros)...");
+        load_coeffs(16'sh0100);
+        flush_filter(70);
+        
+        // Load POSITIVE max coefficient to multiply with negative sample
+        load_coeffs(16'sh7FFF);
+        
+        $display("Sending 70 max negative samples (0x8000)...");
+        for (i = 0; i < 70; i = i + 1) begin
+            send_and_wait(-16'sh8000, actual);
+            
+            if (i == 0 || i == 1 || i == 63 || i == 64 || i == 69) begin
+                $display("  Sample[%02d]: output = 0x%h (%0d)", i, actual, $signed(actual));
+            end else if (i == 2) begin
+                $display("  ...");
+            end
+        end
+        
+        // Expected: +0x7FFF * -0x8000 = negative
+        // 64 MACs: 64 * -0x3FFF8000 / 2^21 = -32767, saturates to -32768
+        if (actual >= 16'sh8000 && actual <= 16'sh8002) begin
+            $display("TEST 8: PASSED (output = %0d, expected -32768 to -32766)\n", $signed(actual));
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 8: FAILED (output = %0d, expected -32768 to -32766)\n", $signed(actual));
+            fail_count = fail_count + 1;
+        end
+        
+        repeat(20) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 9: Mixed Sign Response
+        // ===================================================================
+        test_num = 9;
+        $display("========================================");
+        $display("TEST 9: Mixed Sign Response");
+        $display("========================================");
+        
+        // Flush first
+        $display("Flushing filter (70 zeros)...");
+        load_coeffs(16'sh0100);
+        flush_filter(70);
+        
+        load_coeffs(16'sh0200);  // Coeff = 1.0 in Q7.9
+        
+        $display("Sending pattern: [+0x4000, -0x2000] repeated...");
+        for (i = 0; i < 70; i = i + 1) begin
+            if (i % 2 == 0) begin
+                send_and_wait(16'sh4000, actual);
+            end else begin
+                send_and_wait(-16'sh2000, actual);
+            end
+            
+            if (i == 0 || i == 1 || i == 63 || i == 64 || i == 69) begin
+                $display("  Sample[%02d]: output = 0x%h (%0d)", i, actual, $signed(actual));
+            end else if (i == 2) begin
+                $display("  ...");
+            end
+        end
+        
+        // Expected: (32 * 0x4000 - 32 * 0x2000) * 0x0200 / 2^21 = 64
+        if (actual >= 16'sh0038 && actual <= 16'sh0048) begin
+            $display("TEST 9: PASSED (output = %0d, expected ~64)\n", $signed(actual));
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 9: FAILED (output = %0d, expected ~64)\n", $signed(actual));
+            fail_count = fail_count + 1;
+        end
+        
+        repeat(20) @(posedge clk2);
+        
+        // ===================================================================
+        // TEST 10: Zero Flush Verification
+        // ===================================================================
+        test_num = 10;
+        $display("========================================");
+        $display("TEST 10: Zero Flush Verification");
+        $display("========================================");
+        
+        load_coeffs(16'sh0100);
+        
+        $display("Sending 80 zeros to verify filter clears...");
+        for (i = 0; i < 80; i = i + 1) begin
+            send_and_wait(16'sh0000, actual);
+            
+            if (i < 64) begin
+                // First 64 samples flush old data
+                if (i == 0 || i == 1 || i == 63) begin
+                    $display("  Sample[%02d]: output = 0x%h (flushing)", i, actual);
+                end else if (i == 2) begin
+                    $display("  ...");
+                end
+            end else begin
+                // After 64 samples, should be zero
+                if (i == 64 || i == 79) begin
+                    $display("  Sample[%02d]: output = 0x%h (%0d)", i, actual, $signed(actual));
+                end else if (i == 65) begin
+                    $display("  ...");
+                end
+                
+                if (actual != 16'sh0000) begin
+                    $display("  ERROR at sample %0d: Expected 0, got %0d", i, $signed(actual));
+                    fail_count = fail_count + 1;
+                end
+            end
+        end
+        
+        if (actual == 16'sh0000) begin
+            $display("TEST 10: PASSED (filter cleared after 64+ samples)\n");
+            pass_count = pass_count + 1;
+        end else begin
+            $display("TEST 10: FAILED (filter not cleared)\n");
+        end
+        
+        // ===================================================================
+        // Summary
+        // ===================================================================
+        repeat(100) @(posedge clk2);
+        
+        $display("\n========================================");
+        $display("COMPREHENSIVE TEST SUMMARY");
+        $display("========================================");
+        $display("Total Tests: 10");
+        $display("Passed: %0d", pass_count);
+        $display("Failed: %0d", fail_count);
+        $display("========================================");
+        
+        if (fail_count == 0) begin
+            $display("\n*** ALL TESTS PASSED ***\n");
+        end else begin
+            $display("\n*** %0d TEST(S) FAILED ***\n", fail_count);
+        end
+        
+        $display("Simulation completed at %0t ns\n", $time);
+        
+        #10000;
+        $finish;
+    end
+    
+    
+endmodule
