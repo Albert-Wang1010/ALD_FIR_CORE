@@ -169,4 +169,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-*For questions or collaboration opportunities, please contact via the information provided in the repository profile.*
+*For questions or collaboration opportunities, please contact via email: [aw3741@columbia.edu](mailto:aw3741@columbia.edu).*
