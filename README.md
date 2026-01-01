@@ -62,11 +62,14 @@ The design consists of five primary modules integrated into a single top-level `
   - All tests passed (3/3), no X-propagation
   - Power analysis VCD generation testbench
 
+*Note: VCD files excluded from repository due to large file size (8+ GB). Testbenches provided for regeneration.*
+
 ### Synthesis & Analysis
 - **synthesis/scripts/** - Design Compiler TCL constraint files
 - **synthesis/results/** - Gate-level netlist, SDF, synthesis reports
-- **analysis/timing/** - PrimeTime static timing analysis
-- **analysis/power/** - PrimeTime PX power analysis reports
+- **analysis/** - PrimeTime static timing and power analysis reports
+  - Timing analysis with SDF back-annotation
+  - Power analysis with VCD-based switching activity
 
 ### Documentation
 - **docs/** - Architecture diagrams, waveforms, analysis plots
@@ -163,3 +166,7 @@ Completed as part of CSEE W4823 Advanced Logic Design at Columbia University (Fa
 ## License
 
 MIT License - see LICENSE file for details.
+
+---
+
+*For questions or collaboration opportunities, please contact via the information provided in the repository profile.*
